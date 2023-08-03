@@ -26,15 +26,11 @@ function resistsType(pokemon, tipo){
 function resistsMove(pokemon, movimiento){
     tipo =  Object.values(movimiento);
     return pokemon.modifiers.resistances.includes(tipo[1])
-
 }
 
 
 function isWeakAgainst(pokemones){
     return pokemones.attaked.modifiers.resistances.includes(pokemones.attaker.type)
-    
-
-    // return attaked.modifiers.weakness.includes(attaker.type)
 }
 
 
@@ -43,9 +39,8 @@ function isStrongAgainst(attaker, attaked){
 }
 
 
-function addAbility(pokemon, ){
-    pokemon.ability.habilidadNew = valor
-    return pokemon
+function addAbility(pokemon, habilidad ){
+    
 }
 
 
@@ -171,7 +166,8 @@ const pikachu = getPikachu()
 const squirtle = getSquirtle()
 const bulbasaur = getBulbasaur();
 const charmander = getCharmander();
-let f = {attaker: pikachu, attaked: bulbasaur}
+let abilityNew = { secondary: "Discharge" }
+let fighters = {attaker: pikachu, attaked: bulbasaur}
 console.log(getAttackModifier(f))
 console.log(isWeakAgainst(f))
 
