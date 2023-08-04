@@ -39,8 +39,9 @@ function isStrongAgainst(attaker, attaked){
 }
 
 
-function addAbility(pokemon, habilidad ){
-    
+function addAbility(pokemon, habilidadNueva ){
+    pokemon.ability= {...pokemon.ability, ...habilidadNueva};
+    return pokemon
 }
 
 
@@ -65,6 +66,11 @@ function getAttackModifier (pokemones){
         return 1;
     }
 }
+
+
+// function getAttackLog(pokemones){
+//     return `${pokemones.attacker} used ${pokemones.move}! ${pokemones.attacked} lost ${pokemones.damage} HP!`
+// }
 
 const getBulbasaur = () => {
     return{
@@ -162,13 +168,21 @@ const getPikachu = () => {
     }
 }
 
-const pikachu = getPikachu()
-const squirtle = getSquirtle()
+const pikachu = getPikachu();
+const squirtle = getSquirtle();
 const bulbasaur = getBulbasaur();
 const charmander = getCharmander();
 let abilityNew = { secondary: "Discharge" }
-let fighters = {attaker: pikachu, attaked: bulbasaur}
-console.log(getAttackModifier(f))
-console.log(isWeakAgainst(f))
+let fighters = {attaker: pikachu, attaked: bulbasaur};
+const attackLog = {
+    attacker:"Squirtle",
+    attacked: "Pikachu",
+    move: "Water Gun",
+    damage: 12,
+    modifier: "weak" // otros valores: "resistant", "normal"
+};
 
-
+// console.log(getAttackModifier(f))
+// console.log(isWeakAgainst(f))
+// addAbility(pikachu, abilityNew)
+// getAttackLog(attackLog)
