@@ -178,7 +178,7 @@ const getBulbasaur = () => {
             "Growl", "Tackle", "Vine Whip", "Razor Leaf"
         ],
         modifiers: {
-            "weakness": ["fire, ice", "flying", "psychic"],
+            "weakness": ["fire", "ice", "flying", "psychic"],
             "resistances": ["water", "grass", "electric", "fighter"]
         }
     }
