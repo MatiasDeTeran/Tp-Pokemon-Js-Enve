@@ -1,26 +1,30 @@
-function getMoves(pokemon){
+function getMoves(pokemon){ 
     return pokemon.moves;
 }
-
+// devuelve lista de movimientos
 
 function getPrimaryAbility(pokemon){
     return pokemon.ability.primary;
 }
+// devuelve la habilidad primaria
 
 
 function getWeaknesses(pokemon){
     return pokemon.modifiers.weakness;
 }
+// devuelve lista de tipos contra los que es debil
 
 
 function getResistances(pokemon){
     return pokemon.modifiers.resistances;
 }
+// devuelve la lista de tipos contra los que es resistente
 
 
 function resistsType(pokemon, tipo){
     return pokemon.modifiers.resistances.includes(tipo)
 }
+
 
 
 function resistsMove(pokemon, movimiento){
@@ -30,37 +34,42 @@ function resistsMove(pokemon, movimiento){
 
 
 function isWeakAgainst(pokemones){
-    return pokemones.attaked.modifiers.resistances.includes(pokemones.attaker.type)
+    return pokemones.attacked.modifiers.weakness.includes(pokemones.attacker.type)
 }
+// devuelve true si el pokemon atacado es debil frente al pokemon que lo ataca
 
 
-function isStrongAgainst(attaker, attaked){
-    return attaked.modifiers.resistances.includes(attaker.type)
+function isStrongAgainst(pokemones){
+    return pokemones.attacked.modifiers.resistances.includes(pokemones.attacker.type)
 }
+// devuelve true si el pokemon atacado es resistente frente al pokemon que lo ataca
 
 
 function addAbility(pokemon, habilidadNueva ){
     pokemon.ability= {...pokemon.ability, ...habilidadNueva};
     return pokemon
 }
+// devuelvel el pokemon con un habilidad agregada
 
 
 function addMove (pokemon, movimiento){
     pokemon.moves.push(movimiento)
     return pokemon
 }
+// devuelve el pokemon con un movimiento agregado
 
 
 function removeMove (pokemon, movimiento){
     pokemon.moves.splice(pokemon.moves.indexOf(movimiento), 1)
     return pokemon;
 }
+// elimina un movimiento del pokemon
 
 
 function getAttackModifier (pokemones){
-    if (pokemones.attaked.modifiers.weakness.includes(pokemones.attaker.type)){
+    if (isWeakAgainst(pokemones)){
         return 2;
-    }else if (pokemones.attaked.modifiers.resistances.includes(pokemones.attaker.type)){
+    }else if (isStrongAgainst(pokemones)){
         return 0.5;
     }else{
         return 1;
@@ -68,9 +77,88 @@ function getAttackModifier (pokemones){
 }
 
 
-// function getAttackLog(pokemones){
-//     return `${pokemones.attacker} used ${pokemones.move}! ${pokemones.attacked} lost ${pokemones.damage} HP!`
-// }
+function getAttackLog(pokemones){
+    if (pokemones.modifier === "weak"){
+        return `${pokemones.attacker} used ${pokemones.move}! ${pokemones.attacked} lost ${pokemones.damage} HP! It's super effective!`
+    }else if(pokemones.modifier === "resistant"){
+        return `${pokemones.attacker} used ${pokemones.move}! ${pokemones.attacked} lost ${pokemones.damage} HP! It's not very effective!`
+    }else{
+        return `${pokemones.attacker} used ${pokemones.move}! ${pokemones.attacked} lost ${pokemones.damage} HP!`
+    }
+}
+
+function calculateDamage(attack, defense, modifier){
+    return Math.floor(0.5 * attack * (attack / defense) * modifier);
+}
+
+
+function battle (pokemon1, pokemon2){
+    let history = [];
+    let rounds = 0; 
+    if (pokemon1.stats.speed > pokemon2.stats.speed){
+        pokeAttacker = pokemon1;
+        pokeAttacked = pokemon2;
+    }else{
+        pokeAttacker = pokemon2;
+        pokeAttacked = pokemon1;
+    }
+    while (pokemon1.stats.hp > 0 && pokemon2.stats.hp > 0){
+        rounds = rounds +1;
+        let modifier = 0;
+        
+        if (isWeakAgainst({attacker: pokeAttacker, attacked: pokeAttacked })){
+            modifier= "weak";
+        }else if(isStrongAgainst({attacker: pokeAttacker, attacked: pokeAttacked})){
+            modifier= "resistant";
+        }else{
+            modifier = "normal";
+        }
+        
+        let movesAttacker= getMoves(pokeAttacker);
+
+        let attackModifier = getAttackModifier({attacker: pokeAttacker, attacked: pokeAttacked});
+
+        let daño= calculateDamage(pokeAttacker.stats.attack, pokeAttacked.stats.deffense, attackModifier);
+
+        pokeAttacked.stats.hp = pokeAttacked.stats.hp - daño;
+
+        history.push(getAttackLog({
+            attacker:pokeAttacker.name,
+            attacked: pokeAttacked.name,
+            move: movesAttacker[Math.floor(Math.random() * movesAttacker.length)],
+            damage: daño,
+            modifier: modifier,
+        }));
+        
+        
+        let variableDeCambio= pokeAttacker
+        pokeAttacker = pokeAttacked;
+        pokeAttacked = variableDeCambio;        
+        
+    }
+
+    
+    if (pokemon1.stats.hp > 0 && pokemon2.stats.hp <= 0){
+        winner = {name:pokemon1.name, hp: pokemon1.stats.hp};
+        losser = {name: pokemon2.name, hp: pokemon2.stats.hp}
+    }else{
+        winner = {name:pokemon2.name, hp: pokemon2.stats.hp};
+        losser = {name: pokemon1.name, hp: pokemon1.stats.hp}
+    }
+    
+
+    return resultBattle = {
+        rounds : rounds,
+        results: {
+            winner: winner,
+            losser: losser
+        },
+        history: history
+    }
+    
+}
+
+
 
 const getBulbasaur = () => {
     return{
@@ -172,17 +260,4 @@ const pikachu = getPikachu();
 const squirtle = getSquirtle();
 const bulbasaur = getBulbasaur();
 const charmander = getCharmander();
-let abilityNew = { secondary: "Discharge" }
-let fighters = {attaker: pikachu, attaked: bulbasaur};
-const attackLog = {
-    attacker:"Squirtle",
-    attacked: "Pikachu",
-    move: "Water Gun",
-    damage: 12,
-    modifier: "weak" // otros valores: "resistant", "normal"
-};
-
-// console.log(getAttackModifier(f))
-// console.log(isWeakAgainst(f))
-// addAbility(pikachu, abilityNew)
-// getAttackLog(attackLog)
+console.log(battle(bulbasaur, charmander));
